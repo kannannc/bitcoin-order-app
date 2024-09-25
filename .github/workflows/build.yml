@@ -1,0 +1,48 @@
+Last login: Wed Sep 25 12:05:40 on ttys000
+vishal@Vishals-MacBook-Pro ~ % cd/Users/vishal
+zsh: no such file or directory: cd/Users/vishal
+vishal@Vishals-MacBook-Pro ~ % cd /Users/vishal
+vishal@Vishals-MacBook-Pro ~ % cd bitcoin-order-app
+vishal@Vishals-MacBook-Pro bitcoin-order-app % git checkout githubcicd
+branch 'githubcicd' set up to track 'origin/githubcicd'.
+Switched to a new branch 'githubcicd'
+vishal@Vishals-MacBook-Pro bitcoin-order-app % mkdir .github
+vishal@Vishals-MacBook-Pro bitcoin-order-app % cd .github
+vishal@Vishals-MacBook-Pro .github % mkdir workflows
+vishal@Vishals-MacBook-Pro .github % vi build.yml
+
+
+
+
+
+
+
+
+
+
+
+
+      #- name: Test
+      #  run: |
+      #    npm run test --watch=false --browsers=ChromeHeadless
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.WORKSHOP6_GITHUB_TOKEN }}
+          output-file: "false"
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKSHOP6_GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          release_name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+      - name: Deploy
+        run: |
+          npm run deploy
+
+
